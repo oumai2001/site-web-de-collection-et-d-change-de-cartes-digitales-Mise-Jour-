@@ -1,0 +1,199 @@
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; 
+            background: linear-gradient(135deg, rgba(52, 44, 163, 1) 0%, rgba(104, 30, 112, 1) 50%, rgba(19, 16, 61, 1) 100%);
+            z-index: -1;
+        }
+        
+        
+       .navbar {
+            background-color: #120F84;
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #fbbf24;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-link {
+            color: #fbbf24;
+            transition: all 0.3s;
+            position: relative;
+            font-weight: 600;
+            padding: 8px 12px;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ef4444, #f59e0b);
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+        }
+        
+        .pokeball-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(180deg, #ef4444 50%, white 50%);
+            border-radius: 50%;
+            border: 5px solid #1f2937;
+            position: relative;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pokeball-logo::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            background: white;
+            border: 5px solid #1f2937;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pokeball-logo::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: #1f2937;
+            transform: translateY(-50%);
+        }
+        
+        .play-button {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #120F84;
+            font-weight: 900;
+            font-size: 1.5rem;
+            padding: 16px 48px;
+            border-radius: 50px;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.5);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .play-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .play-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(251, 191, 36, 0.7);
+        }
+        
+        .play-button:active {
+            transform: scale(1.05);
+        }
+        
+        .play-button span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .mobile-menu-items {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-menu {
+                display: none;
+            }
+            .hero-section {
+                min-height: 70vh;
+            }
+            .pokemon-image {
+                height: 200px;
+            }
+        }
+        @keyframes pulse-slow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+  
+        .card-mini {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .card-mini:hover {
+            transform: scale(1.05);
+        }
+        
+        .arena-card {
+            border: 2px dashed rgba(251, 191, 36, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .arena-card.droppable {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .arena-card.occupied {
+            border-style: solid;
+            border-color: #fbbf24;
+        }
+       
+        

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeCards - Battle Arena</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="pokeball-logo"></div>
+                    <div style="font-family: 'Orbitron', sans-serif;" class="text-xl font-bold text-yellow-400">
+                        PokeCards
+                    </div>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <a href="index.html" class="nav-link text-sm">Retour au Menu</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-6">
+        <h2 id="turn-info" class="text-center text-yellow-400 font-bold text-xl mb-4"> À ton tour de jouer !</h2>
+        <div class="grid grid-cols-11  gap-4">
+        
+            <div class="col-span-12 lg:col-span-2">
+                <div class="bg-purple-900/40 rounded-lg p-4 border-2 border-yellow-400 ">
+                    <h3 class="text-yellow-400 font-bold mb-3 text-center">Deck(<span id="deck-count" class="font-bold">0</span> )</h3>
+                    <div id="deck-zone" class="space-y-2 max-h-[300px] overflow-y-auto hidden">
+                    </div>
+                </div>
+            </div>
+
+          
+            <div class="col-span-12 lg:col-span-9">
+                <div class="bg-red-900/20 rounded-lg p-4 mb-4 border-2 border-red-500">
+                    <h3 class="text-red-400 font-bold mb-3 text-center">Zone Adversaire</h3>
+                    <div class="grid grid-cols-5 gap-2 mb-2">
+                        <div class="arena-card bg-red-900/30 h-32 rounded-lg flex items-center justify-center"></div>
+                        <div class="arena-card bg-red-900/30 h-32 rounded-lg flex items-center justify-center"></div>
+                        <div class="arena-card bg-red-900/30 h-32 rounded-lg flex items-center justify-center"></div>
+                        <div class="arena-card bg-red-900/30 h-32 rounded-lg flex items-center justify-center"></div>
+                        <div class="arena-card bg-red-900/30 h-32 rounded-lg flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-900/20 rounded-lg p-4 border-2 border-blue-500">
+                    <h3 class="text-blue-400 font-bold mb-3 text-center">Votre Zone</h3>
+                    <div class="grid grid-cols-5 gap-2 mb-2">
+                        <div class="arena-card bg-blue-900/30 h-32 rounded-lg flex items-center justify-center"></div>
+                        <div class="arena-card bg-blue-900/30 h-32 rounded-lg flex items-center justify-center"></div>
+                        <div class="arena-card bg-blue-900/30 h-32 rounded-lg flex items-center justify-center" ></div>
+                        <div class="arena-card bg-blue-900/30 h-32 rounded-lg flex items-center justify-center" ></div>
+                        <div class="arena-card bg-blue-900/30 h-32 rounded-lg flex items-center justify-center" ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+        <div class="mt-4 bg-purple-900/40 rounded-lg p-4 border-2 border-yellow-400">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-yellow-400 font-bold">Votre Main</h3>
+                <button  onclick="piocher()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 transition-all text-sm">
+                    Piocher une carte
+                </button>
+            </div>
+            <div id="hand-zone" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 min-h-[150px]">
+                
+            </div>
+            <div class="text-center mt-2">
+                <span class="text-white text-sm">Cartes en main: <span id="hand-count" class="font-bold">0</span>/5</span>
+            </div>
+        </div>
+    </div>
+    <!-- Notification (choix attaque/défense) -->
+<div id="mode-choice" class="hidden fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+  <div class="bg-gray-900 text-white p-6 rounded-2xl text-center w-[300px] shadow-2xl border border-yellow-400">
+    <h3 class="text-lg font-bold mb-3">Choisis le mode de ta carte</h3>
+    <div class="flex justify-around mt-4">
+      <button id="defense-btn" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-lg">🛡️ Défense</button>
+      <button id="attaque-btn" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg">⚔️ Attaque</button>
+    </div>
+  </div>
+</div>
+<div class="text-center mt-4">
+  <button id="new-match-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-600 hidden">
+    Nouvelle Match
+  </button>
+</div>
+
+<footer class="bg-transparent mt-16 border-t border-purple-800">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div>
+                    <h3 class="text-2xl font-bold text-yellow-400 mb-4" style="font-family: 'Orbitron', sans-serif;">
+                        PokeCards.</h3>
+                    <p class="text-gray-300">Votre destination pour les cartes Pokémon digitales</p>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <h4 class="text-white font-bold mb-4">Navigation</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="index.html" class="hover:text-yellow-400 transition-colors">Home</a></li>
+                        <li><a href="guide.html" class="hover:text-yellow-400 transition-colors">Guide</a></li>
+                        <li><a href="market.html" class="hover:text-yellow-400 transition-colors">Market</a></li>
+                        <li><a href="my_deck.html" class="hover:text-yellow-400 transition-colors">My Deck</a></li>
+                        <li><a href="favorites.html" class="hover:text-yellow-400 transition-colors">Favorites</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="text-white font-bold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">FAQ</a></li>
+                        <li><a href="guide.html" class="hover:text-yellow-400 transition-colors">Guide</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">Contact</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">Terms & Conditions</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Follow Us -->
+                <div>
+                    <h4 class="text-white font-bold mb-4">Follow Us</h4>
+                    <div class="flex space-x-6 text-gray-300 text-2xl">
+                        <a href="https://instagram.com" target="_blank" class="hover:text-pink-500 transition-colors">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" class="hover:text-blue-500 transition-colors">
+                            <i class="fa-brands fa-facebook"></i>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="hover:text-sky-400 transition-colors">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer bottom -->
+            <div class="text-center text-gray-400 mt-8 pt-8 border-t border-gray-700">
+                All rights reserved © 2025 PokeCards
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" crossorigin="anonymous"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+<!-- db 7na ghadi ndiro copie dyal data li fi my deck ou ghadi nkhdmo 3liha ou ghadi nbdaw no9so kimiya dyal ay carte sta3mlnaha 3la 7sab kmiya dyalha-->
