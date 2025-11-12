@@ -89,7 +89,7 @@ function displayFavorites() {
   });
 }
 
-// ===== PANIER =====
+//PANIER 
 function getCart() {
   return JSON.parse(localStorage.getItem("cart")) || [];
 }
