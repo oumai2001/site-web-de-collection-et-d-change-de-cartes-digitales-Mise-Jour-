@@ -51,10 +51,10 @@ function displayFavorites() {
   const favorites = getFavorites();
 
   if (favorites.length === 0) {
-    noFavMsg?.classList.remove("hidden");
+    noFavMsg?.classList.remove("hidden"); 
     return;
   } else {
-    noFavMsg?.classList.add("hidden");
+    noFavMsg?.classList.add("hidden"); 
   }
 
   favorites.forEach(card => {
@@ -77,11 +77,11 @@ function displayFavorites() {
 
     div.querySelector(".remove-fav").addEventListener("click", () => {
       removeFavorite(card.id);
-      displayFavorites();
+      displayFavorites(); 
     });
 
     div.querySelector(".add-cart-fav").addEventListener("click", () => {
-      addToCart(card);
+      addToCart(card);   
       showNotification(`${card.name} ajouté avec succès`, "green");
     });
 
@@ -155,7 +155,7 @@ function displayCartItems() {
   let subtotal = 0;
 
   cart.forEach(item => {
-    const itemTotal = parseFloat(item.price.replace("$", "")) * item.quantity;
+    const itemTotal = parseFloat(item.price.replace("$","")) * item.quantity;
     subtotal += itemTotal;
 
     const div = document.createElement("div");
@@ -165,7 +165,7 @@ function displayCartItems() {
         <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-contain rounded-lg">
         <div>
           <h3 class="text-yellow-400 font-bold">${item.name}</h3>
-          <p class="text-white">$${parseFloat(item.price.replace("$", "")).toFixed(2)} x ${item.quantity} = $${itemTotal.toFixed(2)}</p>
+          <p class="text-white">$${parseFloat(item.price.replace("$","")).toFixed(2)} x ${item.quantity} = $${itemTotal.toFixed(2)}</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -217,7 +217,7 @@ function checkout() {
     showNotification("Votre panier est vide !", "pink");
     return;
   }
-  cart.forEach(card => addToMyDeck(card));
+  cart.forEach(card => addToMyDeck(card)); 
   clearCart();
   showNotification("Merci pour votre achat !", "green");
 }
@@ -235,9 +235,9 @@ function addToMyDeck(card) {
   let deck = getMyDeck();
   const existing = deck.find(c => c.id === card.id);
   if (existing) {
-    existing.quantity = (existing.quantity || 1) + 1;
+    existing.quantity = (existing.quantity || 1) + (card.quantity || 1);
   } else {
-    deck.push({ ...card, quantity: 1 });
+    deck.push({ ...card, quantity: card.quantity || 1 });
   }
   saveMyDeck(deck);
 }
@@ -297,26 +297,6 @@ function displayMyDeck(list = getMyDeck()) {
   });
 }
 
-function checkout() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  if (cart.length === 0) {
-    showNotification("Votre panier est vide.", "red");
-    return;
-  }
-  cart.forEach(item => {
-    const existing = getMyDeck().find(c => c.id === item.id);
-    if (existing) {
-      for (let i = 0; i < item.quantity; i++) addToMyDeck(item);
-    } else {
-      for (let i = 0; i < item.quantity; i++) addToMyDeck(item);
-    }
-  });
-  localStorage.removeItem("cart");
-  showNotification("Achat réussi ! Les cartes ont été ajoutées à votre deck.", "green");
-  displayMyDeck();
-}
-
-
 // ===== MARKET =====
 function displayCards(list) {
   if (!container) return;
@@ -345,7 +325,7 @@ function displayCards(list) {
     `;
 
     div.querySelector(".add-cart")?.addEventListener("click", () => {
-      addToCart(card);
+      addToCart(card); 
       showNotification(`${card.name} a été ajoutée au panier !`, "green");
     });
 
@@ -370,7 +350,7 @@ filterButtons.forEach(btn => {
     const rarity = btn.dataset.rarity;
     filterButtons.forEach(b => b.classList.remove("ring-4", "ring-yellow-300"));
     btn.classList.add("ring-4", "ring-yellow-300");
-
+    
     if (window.location.pathname.includes("my_deck.html")) {
       const deck = getMyDeck();
       const filteredDeck = rarity ? deck.filter(c => c.rarity === rarity) : deck;
@@ -466,7 +446,7 @@ mobileToggle?.addEventListener("click", () => {
 // ===== INITIALISATION =====
 window.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
-
+  
   if (window.location.pathname.includes("Favorites.html")) {
     displayFavorites();
   } else if (window.location.pathname.includes("my_deck.html")) {
@@ -478,8 +458,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// play
-
+// Play
 let playDeck = [], hand = [];
 let aiDeck = [];
 let aiField = [];
@@ -491,115 +470,219 @@ document.addEventListener("DOMContentLoaded", () => {
   playDeck = JSON.parse(JSON.stringify(savedDeck));
   aiDeck = JSON.parse(JSON.stringify(savedDeck));
   render();
+  setupDragAndDrop();
 });
 
 function render() {
   const deckZone = document.getElementById("deck-zone");
   const handZone = document.getElementById("hand-zone");
-  const aiZone = document.querySelector(".bg-red-900\\/20 .grid");
-  const playerZone = document.querySelector(".bg-blue-900\\/20 .grid");
+  const aiZone = document.querySelector(".ai-field-zone");
+  const playerZone = document.querySelector(".player-field-zone");
 
-  deckZone.innerHTML = playDeck.map(c => `
-    <div onclick="piocher()" 
-         class="bg-purple-800/50 border border-yellow-400 rounded-lg p-2 text-center cursor-pointer hover:bg-purple-700 transition">
-      <img src="${c.image}" alt="${c.name}" class="w-20 h-20 mx-auto rounded-md mb-1">
-      <h4 class="text-white text-sm font-bold">${c.name}</h4>
-      <p class="text-yellow-300 text-xs">Quantité: ${c.quantity}</p>
-    </div>
-  `).join("");
+  if (deckZone) {
+    deckZone.innerHTML = playDeck.map(c => `
+      <div onclick="piocher()" 
+           class="bg-purple-800/50 border border-yellow-400 rounded-lg p-2 text-center cursor-pointer hover:bg-purple-700 transition">
+        <img src="${c.image}" alt="${c.name}" class="w-20 h-20 mx-auto rounded-md mb-1">
+        <h4 class="text-white text-sm font-bold">${c.name}</h4>
+        <p class="text-yellow-300 text-xs">Quantité: ${c.quantity}</p>
+      </div>
+    `).join("");
+  }
 
-  handZone.innerHTML = hand.map((c, i) => `
-    <div onclick="playCard(${i})" class="bg-blue-800/50 border border-blue-400 rounded-lg p-2 text-center cursor-pointer hover:bg-blue-700 transition">
-      <img src="${c.image}" alt="${c.name}" class="w-20 h-20 mx-auto rounded-md mb-1">
-      <h4 class="text-white text-sm font-bold">${c.name}</h4>
-    </div>
-  `).join("");
+  if (handZone) {
+    handZone.innerHTML = hand.map((c, i) => `
+      <div draggable="true" 
+           data-card-index="${i}"
+           class="hand-card bg-blue-800/50 border-2 border-blue-400 rounded-lg p-2 text-center cursor-grab active:cursor-grabbing hover:bg-blue-700 transition hover:scale-105">
+        <img src="${c.image}" alt="${c.name}" class="w-20 h-20 mx-auto rounded-md mb-1 pointer-events-none">
+        <h4 class="text-white text-sm font-bold pointer-events-none">${c.name}</h4>
+      </div>
+    `).join("");
+    
+    // Ajouter les événements drag aux cartes de la main
+    document.querySelectorAll('.hand-card').forEach(card => {
+      card.addEventListener('dragstart', handleDragStart);
+      card.addEventListener('dragend', handleDragEnd);
+    });
+  }
 
-  aiZone.innerHTML = aiField.map(c => `
-  <div class="arena-card ${c.mode === "defense" ? "bg-green-900/50" : "bg-red-900/50"} 
-       h-32 rounded-lg flex flex-col items-center justify-center text-center border-2
-       ${c.mode === "defense" ? "border-green-400" : "border-red-400"}">
-    <img src="${c.image}" class="w-16 h-16 object-contain mb-1">
-    <p class="text-white text-xs font-bold">${c.name}</p>
-    <p class="text-yellow-300 text-[10px]">${c.mode === "defense" ? "🛡️ Défense" : "⚔️ Attaque"}</p>
-  </div>
-`).join("") + "<div></div>".repeat(5 - aiField.length);
+  if (aiZone) {
+    aiZone.innerHTML = aiField.map(c => `
+      <div class="arena-card ${c.mode === "defense" ? "bg-green-900/50 border-green-400" : "bg-red-900/50 border-red-400"} 
+           h-32 rounded-lg flex flex-col items-center justify-center text-center border-2">
+        <img src="${c.image}" class="w-16 h-16 object-contain mb-1">
+        <p class="text-white text-xs font-bold">${c.name}</p>
+        <p class="text-yellow-300 text-[10px]">${c.mode === "defense" ? "🛡️ Défense" : "⚔️ Attaque"}</p>
+      </div>
+    `).join("") + "<div class='empty-slot'></div>".repeat(Math.max(0, 5 - aiField.length));
+  }
 
-  playerZone.innerHTML = playerField.map(c => `
-  <div class="arena-card ${c.mode === "defense" ? "bg-green-800/50" : "bg-blue-900/50"} 
-       h-32 rounded-lg flex flex-col items-center justify-center text-center border-2 
-       ${c.mode === "defense" ? "border-green-400" : "border-blue-400"}">
-    <img src="${c.image}" class="w-16 h-16 object-contain mb-1">
-    <p class="text-white text-xs font-bold">${c.name}</p>
-    <p class="text-yellow-300 text-[10px]">${c.mode === "defense" ? "🛡️ Défense" : "⚔️ Attaque"}</p>
-  </div>
-`).join("") + "<div></div>".repeat(5 - playerField.length);
+  if (playerZone) {
+    playerZone.innerHTML = Array(5).fill(0).map((_, idx) => {
+      const card = playerField[idx];
+      if (card) {
+        return `
+          <div class="arena-card ${card.mode === "defense" ? "bg-green-800/50 border-green-400" : "bg-blue-900/50 border-blue-400"} 
+               h-32 rounded-lg flex flex-col items-center justify-center text-center border-2">
+            <img src="${card.image}" class="w-16 h-16 object-contain mb-1">
+            <p class="text-white text-xs font-bold">${card.name}</p>
+            <p class="text-yellow-300 text-[10px]">${card.mode === "defense" ? "🛡️ Défense" : "⚔️ Attaque"}</p>
+          </div>
+        `;
+      }
+      return `<div class="drop-zone empty-slot border-2 border-dashed border-blue-400/50 h-32 rounded-lg flex items-center justify-center text-blue-400/50 text-xs" data-slot="${idx}">Glisser ici</div>`;
+    }).join("");
+    
+    // Ajouter les événements drop aux zones vides
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+      zone.addEventListener('dragover', handleDragOver);
+      zone.addEventListener('drop', handleDrop);
+      zone.addEventListener('dragleave', handleDragLeave);
+    });
+  }
 
-
-  document.getElementById("deck-count").textContent = playDeck.reduce((a, c) => a + c.quantity, 0);
-  document.getElementById("hand-count").textContent = hand.length;
-
+  const deckCount = document.getElementById("deck-count");
+  const handCount = document.getElementById("hand-count");
   const turnText = document.getElementById("turn-info");
+  
+  if (deckCount) deckCount.textContent = playDeck.reduce((a, c) => a + c.quantity, 0);
+  if (handCount) handCount.textContent = hand.length;
   if (turnText) {
-    turnText.textContent = currentTurn === "player" ? " À ton tour de jouer !" : " Tour de l’adversaire...";
+    turnText.textContent = currentTurn === "player" ? "🟢 À ton tour de jouer !" : "🔴 Tour de l'adversaire...";
   }
 }
 
-function playCard(index) {
-  if (currentTurn !== "player") return;
-  if (hand.length === 0) return;
-  if (playerField.length >= 5) return;
+// ===== DRAG & DROP HANDLERS =====
+let draggedCardIndex = null;
 
+function handleDragStart(e) {
+  if (currentTurn !== "player") {
+    e.preventDefault();
+    return;
+  }
+  draggedCardIndex = parseInt(e.target.dataset.cardIndex);
+  e.target.style.opacity = '0.5';
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragEnd(e) {
+  e.target.style.opacity = '1';
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.target.classList.add('bg-blue-500/30', 'border-blue-300');
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+function handleDragLeave(e) {
+  e.target.classList.remove('bg-blue-500/30', 'border-blue-300');
+}
+
+function handleDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  e.preventDefault();
+  
+  e.target.classList.remove('bg-blue-500/30', 'border-blue-300');
+  
+  if (draggedCardIndex === null || currentTurn !== "player") return;
+  if (playerField.length >= 5) {
+    showNotification("Le terrain est plein !", "pink");
+    return;
+  }
+  
+  const slotIndex = parseInt(e.target.dataset.slot);
+  if (playerField[slotIndex]) {
+    showNotification("Cette case est déjà occupée !", "pink");
+    return;
+  }
+  
+  // Afficher le choix du mode
+  showModeChoice(draggedCardIndex, slotIndex);
+  draggedCardIndex = null;
+  
+  return false;
+}
+
+function setupDragAndDrop() {
+  // Les événements sont ajoutés dynamiquement dans render()
+}
+
+function showModeChoice(cardIndex, slotIndex) {
   const choiceBox = document.getElementById("mode-choice");
   const btnDefense = document.getElementById("defense-btn");
   const btnAttaque = document.getElementById("attaque-btn");
-
+  
   choiceBox.classList.remove("hidden");
-
+  
   const selectMode = (mode) => {
-    const card = hand.splice(index, 1)[0];
+    const card = hand.splice(cardIndex, 1)[0];
     card.mode = mode;
-    playerField.push(card);
+    playerField[slotIndex] = card;
     choiceBox.classList.add("hidden");
     currentTurn = "ai";
     render();
     setTimeout(aiPlay, 1500);
-    btnDefense.removeEventListener("click", onDefense);
-    btnAttaque.removeEventListener("click", onAttaque);
   };
-
-  const onDefense = () => selectMode("defense");
-  const onAttaque = () => selectMode("attaque");
-
-  btnDefense.addEventListener("click", onDefense);
-  btnAttaque.addEventListener("click", onAttaque);
+  
+  // Nettoyer les anciens listeners
+  const newBtnDefense = btnDefense.cloneNode(true);
+  const newBtnAttaque = btnAttaque.cloneNode(true);
+  btnDefense.parentNode.replaceChild(newBtnDefense, btnDefense);
+  btnAttaque.parentNode.replaceChild(newBtnAttaque, btnAttaque);
+  
+  newBtnDefense.addEventListener("click", () => selectMode("defense"));
+  newBtnAttaque.addEventListener("click", () => selectMode("attaque"));
 }
 
 function aiPlay() {
   if (aiDeck.length === 0) return;
-  if (aiField.length >= 5) return;
+  if (aiField.length >= 5) {
+    currentTurn = "player";
+    render();
+    return;
+  }
 
   const randomIndex = Math.floor(Math.random() * aiDeck.length);
   const card = aiDeck[randomIndex];
 
   const randomMode = Math.random() > 0.5 ? "attaque" : "defense";
   card.mode = randomMode;
-  card.label = randomMode === "defense" ? "🛡️ Défense" : "⚔️ Attaque";
 
   aiField.push(card);
   aiDeck.splice(randomIndex, 1);
-  
+
   currentTurn = "player";
   render();
 }
 
 function piocher() {
-  if (currentTurn !== "player") return;
-  if (hand.length >= 5 || !playDeck.length) return;
+  if (currentTurn !== "player") {
+    showNotification("Ce n'est pas votre tour !", "pink");
+    return;
+  }
+  if (hand.length >= 5) {
+    showNotification("Main pleine (max 5 cartes) !", "pink");
+    return;
+  }
+  if (!playDeck.length) {
+    showNotification("Plus de cartes dans le deck !", "pink");
+    return;
+  }
+  
   const i = Math.floor(Math.random() * playDeck.length);
   const card = playDeck[i];
   hand.push({ ...card });
   card.quantity--;
-  if (card.quantity <= 0) playDeck = playDeck.filter(c => c.id !== card.id);
+  if (card.quantity <= 0) {
+    playDeck = playDeck.filter(c => c.id !== card.id);
+  }
   render();
+  showNotification(`${card.name} piochée !`, "green");
 }
