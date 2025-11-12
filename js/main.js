@@ -22,7 +22,7 @@ let currentPage = 1;
 const itemsPerPage = 6;
 let filteredCards = cards;
 
-// ===== FAVORIS =====
+// FAVORIS 
 function getFavorites() {
   return JSON.parse(localStorage.getItem("favorites")) || [];
 }
@@ -222,7 +222,7 @@ function checkout() {
   showNotification("Merci pour votre achat !", "green");
 }
 
-// ===== MY DECK =====
+// MY DECK
 function getMyDeck() {
   return JSON.parse(localStorage.getItem("myDeck")) || [];
 }
@@ -297,7 +297,7 @@ function displayMyDeck(list = getMyDeck()) {
   });
 }
 
-// ===== MARKET =====
+// MARKET 
 function displayCards(list) {
   if (!container) return;
   container.innerHTML = "";
@@ -344,7 +344,7 @@ function paginate() {
   displayCards(pageItems);
 }
 
-// ===== FILTRES & RECHERCHE =====
+
 filterButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     const rarity = btn.dataset.rarity;
@@ -370,7 +370,7 @@ searchInput?.addEventListener("input", e => {
   paginate();
 });
 
-// ===== PAGINATION =====
+
 document.getElementById("prev-page")?.addEventListener("click", () => {
   if (currentPage > 1) {
     currentPage--;
@@ -393,7 +393,7 @@ document.querySelectorAll(".page-num").forEach(btn => {
   });
 });
 
-// ===== SLIDER HOME =====
+
 if (window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/")) {
   const sliderContainer = document.getElementById("autoSlider");
   if (sliderContainer) {
@@ -424,7 +424,6 @@ if (window.location.pathname.includes("index.html") || window.location.pathname.
   }
 }
 
-// ===== NOTIFICATIONS =====
 function showNotification(message, color) {
   if (!notification || !notifText) return;
   notifText.textContent = message;
@@ -435,7 +434,7 @@ function showNotification(message, color) {
   }, 2000);
 }
 
-// ===== MOBILE MENU =====
+
 const mobileToggle = document.getElementById("mobile-toggle");
 const mobileMenu = document.getElementById("mobile-menu");
 
@@ -443,7 +442,7 @@ mobileToggle?.addEventListener("click", () => {
   mobileMenu?.classList.toggle("hidden");
 });
 
-// ===== INITIALISATION =====
+
 window.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   
@@ -500,7 +499,7 @@ function render() {
       </div>
     `).join("");
     
-    // Ajouter les événements drag aux cartes de la main
+  
     document.querySelectorAll('.hand-card').forEach(card => {
       card.addEventListener('dragstart', handleDragStart);
       card.addEventListener('dragend', handleDragEnd);
@@ -534,7 +533,6 @@ function render() {
       return `<div class="drop-zone empty-slot border-2 border-dashed border-blue-400/50 h-32 rounded-lg flex items-center justify-center text-blue-400/50 text-xs" data-slot="${idx}">Glisser ici</div>`;
     }).join("");
     
-    // Ajouter les événements drop aux zones vides
     document.querySelectorAll('.drop-zone').forEach(zone => {
       zone.addEventListener('dragover', handleDragOver);
       zone.addEventListener('drop', handleDrop);
@@ -553,7 +551,6 @@ function render() {
   }
 }
 
-// ===== DRAG & DROP HANDLERS =====
 let draggedCardIndex = null;
 
 function handleDragStart(e) {
@@ -603,7 +600,7 @@ function handleDrop(e) {
     return;
   }
   
-  // Afficher le choix du mode
+
   showModeChoice(draggedCardIndex, slotIndex);
   draggedCardIndex = null;
   
@@ -611,7 +608,7 @@ function handleDrop(e) {
 }
 
 function setupDragAndDrop() {
-  // Les événements sont ajoutés dynamiquement dans render()
+ 
 }
 
 function showModeChoice(cardIndex, slotIndex) {
@@ -631,7 +628,7 @@ function showModeChoice(cardIndex, slotIndex) {
     setTimeout(aiPlay, 1500);
   };
   
-  // Nettoyer les anciens listeners
+
   const newBtnDefense = btnDefense.cloneNode(true);
   const newBtnAttaque = btnAttaque.cloneNode(true);
   btnDefense.parentNode.replaceChild(newBtnDefense, btnDefense);
