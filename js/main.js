@@ -51,10 +51,10 @@ function displayFavorites() {
   const favorites = getFavorites();
 
   if (favorites.length === 0) {
-    noFavMsg?.classList.remove("hidden"); 
+    noFavMsg?.classList.remove("hidden");
     return;
   } else {
-    noFavMsg?.classList.add("hidden"); 
+    noFavMsg?.classList.add("hidden");
   }
 
   favorites.forEach(card => {
@@ -77,11 +77,11 @@ function displayFavorites() {
 
     div.querySelector(".remove-fav").addEventListener("click", () => {
       removeFavorite(card.id);
-      displayFavorites(); 
+      displayFavorites();
     });
 
     div.querySelector(".add-cart-fav").addEventListener("click", () => {
-      addToCart(card);   
+      addToCart(card);
       showNotification(`${card.name} ajouté avec succès`, "green");
     });
 
@@ -155,7 +155,7 @@ function displayCartItems() {
   let subtotal = 0;
 
   cart.forEach(item => {
-    const itemTotal = parseFloat(item.price.replace("$","")) * item.quantity;
+    const itemTotal = parseFloat(item.price.replace("$", "")) * item.quantity;
     subtotal += itemTotal;
 
     const div = document.createElement("div");
@@ -165,7 +165,7 @@ function displayCartItems() {
         <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-contain rounded-lg">
         <div>
           <h3 class="text-yellow-400 font-bold">${item.name}</h3>
-          <p class="text-white">$${parseFloat(item.price.replace("$","")).toFixed(2)} x ${item.quantity} = $${itemTotal.toFixed(2)}</p>
+          <p class="text-white">$${parseFloat(item.price.replace("$", "")).toFixed(2)} x ${item.quantity} = $${itemTotal.toFixed(2)}</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -217,7 +217,7 @@ function checkout() {
     showNotification("Votre panier est vide !", "pink");
     return;
   }
-  cart.forEach(card => addToMyDeck(card)); 
+  cart.forEach(card => addToMyDeck(card));
   clearCart();
   showNotification("Merci pour votre achat !", "green");
 }
@@ -345,7 +345,7 @@ function displayCards(list) {
     `;
 
     div.querySelector(".add-cart")?.addEventListener("click", () => {
-      addToCart(card); 
+      addToCart(card);
       showNotification(`${card.name} a été ajoutée au panier !`, "green");
     });
 
@@ -370,7 +370,7 @@ filterButtons.forEach(btn => {
     const rarity = btn.dataset.rarity;
     filterButtons.forEach(b => b.classList.remove("ring-4", "ring-yellow-300"));
     btn.classList.add("ring-4", "ring-yellow-300");
-    
+
     if (window.location.pathname.includes("my_deck.html")) {
       const deck = getMyDeck();
       const filteredDeck = rarity ? deck.filter(c => c.rarity === rarity) : deck;
@@ -466,7 +466,7 @@ mobileToggle?.addEventListener("click", () => {
 // ===== INITIALISATION =====
 window.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
-  
+
   if (window.location.pathname.includes("Favorites.html")) {
     displayFavorites();
   } else if (window.location.pathname.includes("my_deck.html")) {
@@ -479,6 +479,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // play
+
 let playDeck = [], hand = [];
 let aiDeck = [];
 let aiField = [];
@@ -514,7 +515,7 @@ function render() {
     </div>
   `).join("");
 
-aiZone.innerHTML = aiField.map(c => `
+  aiZone.innerHTML = aiField.map(c => `
   <div class="arena-card ${c.mode === "defense" ? "bg-green-900/50" : "bg-red-900/50"} 
        h-32 rounded-lg flex flex-col items-center justify-center text-center border-2
        ${c.mode === "defense" ? "border-green-400" : "border-red-400"}">
@@ -524,7 +525,7 @@ aiZone.innerHTML = aiField.map(c => `
   </div>
 `).join("") + "<div></div>".repeat(5 - aiField.length);
 
-playerZone.innerHTML = playerField.map(c => `
+  playerZone.innerHTML = playerField.map(c => `
   <div class="arena-card ${c.mode === "defense" ? "bg-green-800/50" : "bg-blue-900/50"} 
        h-32 rounded-lg flex flex-col items-center justify-center text-center border-2 
        ${c.mode === "defense" ? "border-green-400" : "border-blue-400"}">
@@ -547,7 +548,7 @@ playerZone.innerHTML = playerField.map(c => `
 function playCard(index) {
   if (currentTurn !== "player") return;
   if (hand.length === 0) return;
-  if (playerField.length >=5) return;
+  if (playerField.length >= 5) return;
 
   const choiceBox = document.getElementById("mode-choice");
   const btnDefense = document.getElementById("defense-btn");
@@ -583,11 +584,11 @@ function aiPlay() {
 
   const randomMode = Math.random() > 0.5 ? "attaque" : "defense";
   card.mode = randomMode;
-  card.label = randomMode === "defense" ? "🛡️ Défense" : "⚔️ Attaque"; 
+  card.label = randomMode === "defense" ? "🛡️ Défense" : "⚔️ Attaque";
 
   aiField.push(card);
   aiDeck.splice(randomIndex, 1);
-
+  
   currentTurn = "player";
   render();
 }
