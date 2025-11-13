@@ -1,4 +1,4 @@
-// Données statiques des cartes Pokémon
+// Données des cartes
 const cards = [
   { id: 1, name: "Pikachu", rarity: "Common", description: "Un Pokémon électrique rapide et adorable.", price: "150 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png" },
   { id: 2, name: "Charizard", rarity: "Rare Ultra", description: "Un dragon puissant cracheur de flammes.", price: "1200 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png" },
@@ -11,24 +11,28 @@ const cards = [
   { id: 9, name: "Rayquaza", rarity: "Rare Rainbow", description: "Un dragon céleste gardien des cieux.", price: "2500 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/384.png" }
 ];
 
-// Variables globales
-const container = document.getElementById("cards-container");
-const searchInput = document.getElementById("search-input");
-const filterButtons = document.querySelectorAll(".filter-btn");
-const notification = document.getElementById("notification");
-const notifText = document.getElementById("notification-text");
-
 let currentPage = 1;
-const itemsPerPage = 6;
 let filteredCards = cards;
 
-// FAVORIS 
+// NOTIFICATIONS 
+function showNotification(message, color) {
+  const notification = document.getElementById("notification");
+  const notifText = document.getElementById("notification-text");
+  if (!notification) return;
+  
+  notifText.textContent = message;
+  notification.style.backgroundColor = color === "green" ? "#22c55e" : "#ec4899";
+  notification.classList.remove("translate-x-full");
+  setTimeout(() => notification.classList.add("translate-x-full"), 2000);
+}
+
+//FAVORIS
 function getFavorites() {
   return JSON.parse(localStorage.getItem("favorites")) || [];
 }
 
 function addFavorite(card) {
-  let favorites = getFavorites();
+  const favorites = getFavorites();
   if (!favorites.find(c => c.id === card.id)) {
     favorites.push(card);
     localStorage.setItem("favorites", JSON.stringify(favorites));
@@ -37,35 +41,32 @@ function addFavorite(card) {
 }
 
 function removeFavorite(cardId) {
-  let favorites = getFavorites();
-  favorites = favorites.filter(c => c.id !== cardId);
+  const favorites = getFavorites().filter(c => c.id !== cardId);
   localStorage.setItem("favorites", JSON.stringify(favorites));
 }
 
 function displayFavorites() {
-  const favContainer = document.getElementById("favorites-container");
+  const container = document.getElementById("favorites-container");
   const noFavMsg = document.getElementById("no-favorites");
-  if (!favContainer) return;
+  if (!container) return;
 
-  favContainer.innerHTML = "";
   const favorites = getFavorites();
-
+  container.innerHTML = "";
+  
   if (favorites.length === 0) {
-    noFavMsg?.classList.remove("hidden"); 
+    if (noFavMsg) noFavMsg.classList.remove("hidden");
     return;
-  } else {
-    noFavMsg?.classList.add("hidden"); 
   }
+  if (noFavMsg) noFavMsg.classList.add("hidden");
 
   favorites.forEach(card => {
     const div = document.createElement("div");
-    div.className = `relative w-90 h-[490px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform mx-auto bg-transparent backdrop-blur-md`;
-
+    div.className = "relative w-90 h-[490px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform mx-auto bg-transparent backdrop-blur-md";
     div.innerHTML = `
       <img src="${card.image}" alt="${card.name}" class="w-full h-full object-cover">
       <div class="absolute bottom-0 w-full bg-gradient-to-t from-purple-900/90 via-purple-900/60 to-transparent p-4 text-white z-10">
         <h2 class="text-2xl font-bold text-yellow-400 mb-1">${card.name}</h2>
-        <p class="text-sm mb-1">Rareté: <span class="font-semibold">${card.rarity}</span></p>
+        <p class="text-sm mb-1">Rareté: ${card.rarity}</p>
         <p class="text-gray-300 mb-2 text-xs">${card.description}</p>
         <p class="text-lg font-bold mb-2">${card.price}</p>
         <div class="flex gap-2">
@@ -75,21 +76,21 @@ function displayFavorites() {
       </div>
     `;
 
-    div.querySelector(".remove-fav").addEventListener("click", () => {
+    div.querySelector(".remove-fav").onclick = () => {
       removeFavorite(card.id);
-      displayFavorites(); 
-    });
+      displayFavorites();
+    };
 
-    div.querySelector(".add-cart-fav").addEventListener("click", () => {
-      addToCart(card);   
+    div.querySelector(".add-cart-fav").onclick = () => {
+      addToCart(card);
       showNotification(`${card.name} ajouté avec succès`, "green");
-    });
+    };
 
-    favContainer.appendChild(div);
+    container.appendChild(div);
   });
 }
 
-//PANIER 
+//  PANIER 
 function getCart() {
   return JSON.parse(localStorage.getItem("cart")) || [];
 }
@@ -100,8 +101,9 @@ function saveCart(cart) {
 }
 
 function addToCart(card) {
-  let cart = getCart();
+  const cart = getCart();
   const existing = cart.find(item => item.id === card.id);
+  
   if (existing) {
     existing.quantity++;
   } else {
@@ -111,9 +113,7 @@ function addToCart(card) {
 }
 
 function removeFromCart(cardId) {
-  let cart = getCart();
-  cart = cart.filter(item => item.id !== cardId);
-  saveCart(cart);
+  saveCart(getCart().filter(item => item.id !== cardId));
   displayCartItems();
 }
 
@@ -123,39 +123,34 @@ function changeQuantity(cardId, delta) {
   if (!item) return;
 
   item.quantity += delta;
-  if (item.quantity <= 0) {
-    cart = cart.filter(c => c.id !== cardId);
-  }
+  if (item.quantity <= 0) cart = cart.filter(c => c.id !== cardId);
+  
   saveCart(cart);
   displayCartItems();
 }
 
 function displayCartItems() {
-  const cartContainer = document.getElementById("cart-items");
-  const subtotalElem = document.getElementById("cart-subtotal");
-  const taxElem = document.getElementById("cart-tax");
-  const totalElem = document.getElementById("cart-total");
-
-  if (!cartContainer) return;
+  const container = document.getElementById("cart-items");
+  if (!container) return;
 
   const cart = getCart();
 
   if (cart.length === 0) {
-    cartContainer.innerHTML = `
-      <p class="text-white text-center text-xl mb-4">Votre panier est vide. Découvrez de nouvelles cartes sur le marché !</p>
+    container.innerHTML = `
+      <p class="text-white text-center text-xl mb-4">Votre panier est vide.</p>
       <a href="market.html" class="block text-center text-yellow-400 font-bold hover:underline">Voir le Market</a>
     `;
-    subtotalElem.textContent = "$0.00";
-    taxElem.textContent = "$0.00";
-    totalElem.textContent = "$0.00";
+    document.getElementById("cart-subtotal").textContent = "$0.00";
+    document.getElementById("cart-tax").textContent = "$0.00";
+    document.getElementById("cart-total").textContent = "$0.00";
     return;
   }
 
-  cartContainer.innerHTML = "";
   let subtotal = 0;
+  container.innerHTML = "";
 
   cart.forEach(item => {
-    const itemTotal = parseFloat(item.price.replace("$","")) * item.quantity;
+    const itemTotal = parseFloat(item.price.replace("$", "")) * item.quantity;
     subtotal += itemTotal;
 
     const div = document.createElement("div");
@@ -165,44 +160,35 @@ function displayCartItems() {
         <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-contain rounded-lg">
         <div>
           <h3 class="text-yellow-400 font-bold">${item.name}</h3>
-          <p class="text-white">$${parseFloat(item.price.replace("$","")).toFixed(2)} x ${item.quantity} = $${itemTotal.toFixed(2)}</p>
+          <p class="text-white">$${parseFloat(item.price.replace("$", "")).toFixed(2)} x ${item.quantity} = $${itemTotal.toFixed(2)}</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" data-action="decrease" data-id="${item.id}">-</button>
+        <button class="bg-red-500 text-white px-2 py-1 rounded" onclick="changeQuantity(${item.id}, -1)">-</button>
         <span class="text-white font-bold">${item.quantity}</span>
-        <button class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" data-action="increase" data-id="${item.id}">+</button>
-        <button class="ml-2 bg-pink-500 text-white px-2 py-1 rounded hover:bg-pink-600" data-action="remove" data-id="${item.id}">Supprimer</button>
+        <button class="bg-green-500 text-white px-2 py-1 rounded" onclick="changeQuantity(${item.id}, 1)">+</button>
+        <button class="ml-2 bg-pink-500 text-white px-2 py-1 rounded" onclick="removeFromCart(${item.id})">Supprimer</button>
       </div>
     `;
-    cartContainer.appendChild(div);
+    container.appendChild(div);
   });
 
   const tax = subtotal * 0.2;
   const total = subtotal + tax;
 
-  subtotalElem.textContent = `$${subtotal.toFixed(2)}`;
-  taxElem.textContent = `$${tax.toFixed(2)}`;
-  totalElem.textContent = `$${total.toFixed(2)}`;
-
-  cartContainer.querySelectorAll("button").forEach(btn => {
-    const id = parseInt(btn.dataset.id);
-    const action = btn.dataset.action;
-    btn.addEventListener("click", () => {
-      if (action === "increase") changeQuantity(id, 1);
-      else if (action === "decrease") changeQuantity(id, -1);
-      else if (action === "remove") removeFromCart(id);
-    });
-  });
+  document.getElementById("cart-subtotal").textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById("cart-tax").textContent = `$${tax.toFixed(2)}`;
+  document.getElementById("cart-total").textContent = `$${total.toFixed(2)}`;
 }
 
 function updateCartCount() {
   const cart = getCart();
   const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const cartCountElem = document.getElementById("cart-count");
-  const cartCountMobileElem = document.getElementById("cart-count-mobile");
-  if (cartCountElem) cartCountElem.textContent = count;
-  if (cartCountMobileElem) cartCountMobileElem.textContent = count;
+  
+  const elem1 = document.getElementById("cart-count");
+  const elem2 = document.getElementById("cart-count-mobile");
+  if (elem1) elem1.textContent = count;
+  if (elem2) elem2.textContent = count;
 }
 
 function clearCart() {
@@ -217,12 +203,13 @@ function checkout() {
     showNotification("Votre panier est vide !", "pink");
     return;
   }
-  cart.forEach(card => addToMyDeck(card)); 
+  
+  cart.forEach(card => addToMyDeck(card));
   clearCart();
   showNotification("Merci pour votre achat !", "green");
 }
 
-// MY DECK
+// MY DECK 
 function getMyDeck() {
   return JSON.parse(localStorage.getItem("myDeck")) || [];
 }
@@ -232,8 +219,9 @@ function saveMyDeck(deck) {
 }
 
 function addToMyDeck(card) {
-  let deck = getMyDeck();
+  const deck = getMyDeck();
   const existing = deck.find(c => c.id === card.id);
+  
   if (existing) {
     existing.quantity = (existing.quantity || 1) + (card.quantity || 1);
   } else {
@@ -245,76 +233,67 @@ function addToMyDeck(card) {
 function removeFromMyDeck(cardId) {
   let deck = getMyDeck();
   const existing = deck.find(c => c.id === cardId);
+  
   if (existing) {
     existing.quantity -= 1;
-    if (existing.quantity <= 0) {
-      deck = deck.filter(c => c.id !== cardId);
-    }
+    if (existing.quantity <= 0) deck = deck.filter(c => c.id !== cardId);
   }
   saveMyDeck(deck);
 }
 
 function displayMyDeck(list = getMyDeck()) {
-  const deckContainer = document.getElementById("deck-container");
+  const container = document.getElementById("deck-container");
   const emptyMsg = document.getElementById("empty-deck");
+  if (!container) return;
 
-  if (!deckContainer) return;
-
-  deckContainer.innerHTML = "";
+  container.innerHTML = "";
+  
   if (list.length === 0) {
-    emptyMsg?.classList.remove("hidden");
+    if (emptyMsg) emptyMsg.classList.remove("hidden");
     return;
-  } else {
-    emptyMsg?.classList.add("hidden");
   }
+  if (emptyMsg) emptyMsg.classList.add("hidden");
 
   list.forEach(card => {
     const div = document.createElement("div");
-    div.className = `relative w-80 h-[520px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform bg-transparent backdrop-blur-md`;
+    div.className = "relative w-80 h-[520px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform bg-transparent backdrop-blur-md";
     div.innerHTML = `
       <img src="${card.image}" alt="${card.name}" class="w-full h-full object-cover">
       <div class="absolute bottom-0 w-full bg-gradient-to-t from-purple-900/90 via-purple-900/50 to-transparent p-4 text-white">
         <h2 class="text-2xl font-bold text-yellow-400 mb-1">${card.name}</h2>
-        <p class="text-sm mb-1">Rareté : <span class="font-semibold">${card.rarity}</span></p>
+        <p class="text-sm mb-1">Rareté : ${card.rarity}</p>
         <p class="text-gray-300 text-xs mb-2">${card.description}</p>
         <p class="text-lg font-bold mb-1">${card.price}</p>
-        <p class="text-sm font-semibold mb-2">Quantité : 
-          <span class="text-yellow-400">${card.quantity || 1}</span>
-        </p>
-        <div class="flex gap-2">
-          <button class="bg-red-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-red-600 text-xs remove-deck">Revendre 1</button>
-        </div>
+        <p class="text-sm font-semibold mb-2">Quantité : <span class="text-yellow-400">${card.quantity || 1}</span></p>
+        <button class="bg-red-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-red-600 text-xs remove-deck">Revendre 1</button>
       </div>
     `;
 
-    div.querySelector(".remove-deck").addEventListener("click", () => {
+    div.querySelector(".remove-deck").onclick = () => {
       removeFromMyDeck(card.id);
-      showNotification(`${card.name} a été retiré du deck.`, "pink");
+      showNotification(`${card.name} retiré du deck.`, "pink");
       displayMyDeck();
-    });
+    };
 
-    deckContainer.appendChild(div);
+    container.appendChild(div);
   });
 }
 
-// MARKET 
+//  MARKET
 function displayCards(list) {
+  const container = document.getElementById("cards-container");
   if (!container) return;
-  container.innerHTML = "";
-  if (list.length === 0) {
-    container.innerHTML = `<p class="text-white text-center text-xl">Aucune carte trouvée.</p>`;
-    return;
-  }
+  
+  container.innerHTML = list.length === 0 ? `<p class="text-white text-center text-xl">Aucune carte trouvée.</p>` : "";
 
   list.forEach(card => {
     const div = document.createElement("div");
-    div.className = `relative w-90 h-[600px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform mx-auto bg-transparent backdrop-blur-md`;
-
+    div.className = "relative w-90 h-[600px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform mx-auto bg-transparent backdrop-blur-md";
     div.innerHTML = `
       <img src="${card.image}" alt="${card.name}" class="w-full h-full object-cover">
       <div class="absolute bottom-0 w-full bg-gradient-to-t from-purple-900/90 via-purple-900/50 to-transparent p-4 text-white">
         <h2 class="text-2xl font-bold text-yellow-400 mb-1">${card.name}</h2>
-        <p class="text-sm mb-1">Rareté: <span class="font-semibold">${card.rarity}</span></p>
+        <p class="text-sm mb-1">Rareté: ${card.rarity}</p>
         <p class="text-gray-300 mb-2 text-xs">${card.description}</p>
         <p class="text-lg font-bold mb-2">${card.price}</p>
         <div class="flex gap-2">
@@ -324,87 +303,70 @@ function displayCards(list) {
       </div>
     `;
 
-    div.querySelector(".add-cart")?.addEventListener("click", () => {
-      addToCart(card); 
-      showNotification(`${card.name} a été ajoutée au panier !`, "green");
-    });
-
-    div.querySelector(".add-fav")?.addEventListener("click", () => {
-      addFavorite(card);
-    });
+    div.querySelector(".add-cart").onclick = () => {
+      addToCart(card);
+      showNotification(`${card.name} ajoutée au panier !`, "green");
+    };
+    div.querySelector(".add-fav").onclick = () => addFavorite(card);
 
     container.appendChild(div);
   });
 }
 
 function paginate() {
-  const start = (currentPage - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  const pageItems = filteredCards.slice(start, end);
-  displayCards(pageItems);
+  const start = (currentPage - 1) * 6;
+  displayCards(filteredCards.slice(start, start + 6));
 }
 
-
-filterButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
+//  FILTERS 
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.onclick = () => {
     const rarity = btn.dataset.rarity;
-    filterButtons.forEach(b => b.classList.remove("ring-4", "ring-yellow-300"));
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("ring-4", "ring-yellow-300"));
     btn.classList.add("ring-4", "ring-yellow-300");
-    
+
     if (window.location.pathname.includes("my_deck.html")) {
       const deck = getMyDeck();
-      const filteredDeck = rarity ? deck.filter(c => c.rarity === rarity) : deck;
-      displayMyDeck(filteredDeck);
+      displayMyDeck(rarity ? deck.filter(c => c.rarity === rarity) : deck);
     } else {
       filteredCards = rarity ? cards.filter(c => c.rarity === rarity) : cards;
       currentPage = 1;
       paginate();
     }
-  });
+  };
 });
 
-searchInput?.addEventListener("input", e => {
-  const value = e.target.value.toLowerCase();
-  filteredCards = cards.filter(c => c.name.toLowerCase().includes(value));
-  currentPage = 1;
-  paginate();
-});
-
-
-document.getElementById("prev-page")?.addEventListener("click", () => {
-  if (currentPage > 1) {
-    currentPage--;
+//  SEARCH
+const searchInput = document.getElementById("search-input");
+if (searchInput) {
+  searchInput.oninput = (e) => {
+    filteredCards = cards.filter(c => c.name.toLowerCase().includes(e.target.value.toLowerCase()));
+    currentPage = 1;
     paginate();
-  }
-});
+  };
+}
 
-document.getElementById("next-page")?.addEventListener("click", () => {
-  const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-  if (currentPage < totalPages) {
-    currentPage++;
-    paginate();
-  }
-});
+// =PAGINATION 
+const prevBtn = document.getElementById("prev-page");
+const nextBtn = document.getElementById("next-page");
+
+if (prevBtn) prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; paginate(); }};
+if (nextBtn) nextBtn.onclick = () => { if (currentPage < Math.ceil(filteredCards.length / 6)) { currentPage++; paginate(); }};
 
 document.querySelectorAll(".page-num").forEach(btn => {
-  btn.addEventListener("click", () => {
-    currentPage = parseInt(btn.dataset.page);
-    paginate();
-  });
+  btn.onclick = () => { currentPage = parseInt(btn.dataset.page); paginate(); };
 });
 
-
+//SLIDER 
 if (window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/")) {
-  const sliderContainer = document.getElementById("autoSlider");
-  if (sliderContainer) {
-    const sliderCards = cards.slice(0, 4);
-    sliderCards.forEach(card => {
+  const slider = document.getElementById("autoSlider");
+  if (slider) {
+    cards.slice(0, 4).forEach(card => {
       const div = document.createElement("div");
-      div.className = `relative w-90 h-[490px] min-w-full bg-transparent text-white border-4 border-white rounded-2xl overflow-hidden flex flex-col items-center justify-end p-6 backdrop-blur-md shadow-2xl`;
-
+      div.className = "relative w-90 h-[490px] min-w-full bg-transparent text-white border-4 border-white rounded-2xl overflow-hidden flex flex-col items-center justify-end p-6 backdrop-blur-md shadow-2xl";
       div.innerHTML = `
         <div class="flex-1 flex items-center justify-center w-full relative z-10">
-          <img src="${card.image}" alt="${card.name}" class="w-[85%] h-auto max-h-[350px] object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-transform duration-500 hover:scale-105">
+          <img src="${card.image}" alt="${card.name}" class="w-[85%] h-auto max-h-[350px] object-contain">
         </div>
         <div class="text-center mt-4 relative z-10">
           <h2 class="text-2xl font-bold text-yellow-400 mb-1">${card.name}</h2>
@@ -412,76 +374,38 @@ if (window.location.pathname.includes("index.html") || window.location.pathname.
           <p class="text-lg font-bold">${card.price}</p>
         </div>
       `;
-      sliderContainer.appendChild(div);
+      slider.appendChild(div);
     });
 
     let index = 0;
-    const slides = sliderContainer.children.length;
     setInterval(() => {
-      index = (index + 1) % slides;
-      sliderContainer.style.transform = `translateX(-${index * 100}%)`;
+      index = (index + 1) % slider.children.length;
+      slider.style.transform = `translateX(-${index * 100}%)`;
     }, 3000);
   }
 }
 
-function showNotification(message, color) {
-  if (!notification || !notifText) return;
-  notifText.textContent = message;
-  notification.classList.remove("translate-x-full");
-  notification.style.backgroundColor = color === "green" ? "#22c55e" : "#ec4899";
-  setTimeout(() => {
-    notification.classList.add("translate-x-full");
-  }, 2000);
+// MOBILE MENU
+const mobileToggle = document.getElementById("mobile-toggle");
+if (mobileToggle) {
+  mobileToggle.onclick = () => {
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (mobileMenu) mobileMenu.classList.toggle("hidden");
+  };
 }
 
-
-const mobileToggle = document.getElementById("mobile-toggle");
-const mobileMenu = document.getElementById("mobile-menu");
-
-mobileToggle?.addEventListener("click", () => {
-  mobileMenu?.classList.toggle("hidden");
-});
-
-
-window.addEventListener("DOMContentLoaded", () => {
-  updateCartCount();
-  
-  if (window.location.pathname.includes("Favorites.html")) {
-    displayFavorites();
-  } else if (window.location.pathname.includes("my_deck.html")) {
-    displayMyDeck();
-  } else if (window.location.pathname.includes("carte.html")) {
-    displayCartItems();
-  } else if (window.location.pathname.includes("market.html")) {
-    paginate();
-  }
-});
-
-// Play
-let playDeck = [], hand = [];
-let aiDeck = [];
-let aiField = [];
-let playerField = [];
+// GAME 
+let playDeck = [], hand = [], aiDeck = [], aiField = [], playerField = [];
 let currentTurn = "player";
+let draggedCardIndex = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const savedDeck = JSON.parse(localStorage.getItem("myDeck")) || [];
-  playDeck = JSON.parse(JSON.stringify(savedDeck));
-  aiDeck = JSON.parse(JSON.stringify(savedDeck));
-  render();
-  setupDragAndDrop();
-});
-
-function render() {
+function renderGame() {
   const deckZone = document.getElementById("deck-zone");
   const handZone = document.getElementById("hand-zone");
-  const aiZone = document.querySelector(".ai-field-zone");
-  const playerZone = document.querySelector(".player-field-zone");
 
   if (deckZone) {
     deckZone.innerHTML = playDeck.map(c => `
-      <div onclick="piocher()" 
-           class="bg-purple-800/50 border border-yellow-400 rounded-lg p-2 text-center cursor-pointer hover:bg-purple-700 transition">
+      <div onclick="piocher()" class="bg-purple-800/50 border border-yellow-400 rounded-lg p-2 text-center cursor-pointer hover:bg-purple-700 transition">
         <img src="${c.image}" alt="${c.name}" class="w-20 h-20 mx-auto rounded-md mb-1">
         <h4 class="text-white text-sm font-bold">${c.name}</h4>
         <p class="text-yellow-300 text-xs">Quantité: ${c.quantity}</p>
@@ -491,195 +415,160 @@ function render() {
 
   if (handZone) {
     handZone.innerHTML = hand.map((c, i) => `
-      <div draggable="true" 
-           data-card-index="${i}"
-           class="hand-card bg-blue-800/50 border-2 border-blue-400 rounded-lg p-2 text-center cursor-grab active:cursor-grabbing hover:bg-blue-700 transition hover:scale-105">
+      <div draggable="true" data-card-index="${i}" class="hand-card bg-blue-800/50 border-2 border-blue-400 rounded-lg p-2 text-center cursor-grab">
         <img src="${c.image}" alt="${c.name}" class="w-20 h-20 mx-auto rounded-md mb-1 pointer-events-none">
         <h4 class="text-white text-sm font-bold pointer-events-none">${c.name}</h4>
       </div>
     `).join("");
-    
-  
+
     document.querySelectorAll('.hand-card').forEach(card => {
-      card.addEventListener('dragstart', handleDragStart);
-      card.addEventListener('dragend', handleDragEnd);
+      card.ondragstart = (e) => {
+        if (currentTurn !== "player") { e.preventDefault(); return; }
+        draggedCardIndex = parseInt(e.target.dataset.cardIndex);
+        e.target.style.opacity = '0.5';
+      };
+      card.ondragend = (e) => e.target.style.opacity = '1';
     });
   }
 
+  const aiZone = document.querySelector(".ai-field-zone");
   if (aiZone) {
     aiZone.innerHTML = aiField.map(c => `
-      <div class="arena-card ${c.mode === "defense" ? "bg-green-900/50 border-green-400" : "bg-red-900/50 border-red-400"} 
-           h-32 rounded-lg flex flex-col items-center justify-center text-center border-2">
+      <div class="arena-card ${c.mode === "defense" ? "bg-green-900/50 border-green-400" : "bg-red-900/50 border-red-400"} h-32 rounded-lg flex flex-col items-center justify-center border-2">
         <img src="${c.image}" class="w-16 h-16 object-contain mb-1">
         <p class="text-white text-xs font-bold">${c.name}</p>
-        <p class="text-yellow-300 text-[10px]">${c.mode === "defense" ? "🛡️ Défense" : "⚔️ Attaque"}</p>
+        <p class="text-yellow-300 text-[10px]">${c.mode === "defense" ? "🛡️" : "⚔️"}</p>
       </div>
     `).join("") + "<div class='empty-slot'></div>".repeat(Math.max(0, 5 - aiField.length));
   }
 
+  const playerZone = document.querySelector(".player-field-zone");
   if (playerZone) {
     playerZone.innerHTML = Array(5).fill(0).map((_, idx) => {
       const card = playerField[idx];
       if (card) {
         return `
-          <div class="arena-card ${card.mode === "defense" ? "bg-green-800/50 border-green-400" : "bg-blue-900/50 border-blue-400"} 
-               h-32 rounded-lg flex flex-col items-center justify-center text-center border-2">
+          <div class="arena-card ${card.mode === "defense" ? "bg-green-800/50 border-green-400" : "bg-blue-900/50 border-blue-400"} h-32 rounded-lg flex flex-col items-center justify-center border-2">
             <img src="${card.image}" class="w-16 h-16 object-contain mb-1">
             <p class="text-white text-xs font-bold">${card.name}</p>
-            <p class="text-yellow-300 text-[10px]">${card.mode === "defense" ? "🛡️ Défense" : "⚔️ Attaque"}</p>
+            <p class="text-yellow-300 text-[10px]">${card.mode === "defense" ? "🛡️" : "⚔️"}</p>
           </div>
         `;
       }
       return `<div class="drop-zone empty-slot border-2 border-dashed border-blue-400/50 h-32 rounded-lg flex items-center justify-center text-blue-400/50 text-xs" data-slot="${idx}">Glisser ici</div>`;
     }).join("");
-    
+
     document.querySelectorAll('.drop-zone').forEach(zone => {
-      zone.addEventListener('dragover', handleDragOver);
-      zone.addEventListener('drop', handleDrop);
-      zone.addEventListener('dragleave', handleDragLeave);
+      zone.ondragover = (e) => {
+        e.preventDefault();
+        zone.classList.add('bg-blue-500/30', 'border-blue-300');
+      };
+      zone.ondragleave = () => zone.classList.remove('bg-blue-500/30', 'border-blue-300');
+      zone.ondrop = (e) => {
+        e.preventDefault();
+        zone.classList.remove('bg-blue-500/30', 'border-blue-300');
+
+        if (draggedCardIndex === null || currentTurn !== "player") return;
+        if (playerField.length >= 5) { showNotification("Le terrain est plein !", "pink"); return; }
+
+        const slotIndex = parseInt(zone.dataset.slot);
+        if (playerField[slotIndex]) { showNotification("Case occupée !", "pink"); return; }
+
+        showModeChoice(draggedCardIndex, slotIndex);
+        draggedCardIndex = null;
+      };
     });
   }
 
   const deckCount = document.getElementById("deck-count");
   const handCount = document.getElementById("hand-count");
   const turnText = document.getElementById("turn-info");
-  
+
   if (deckCount) deckCount.textContent = playDeck.reduce((a, c) => a + c.quantity, 0);
   if (handCount) handCount.textContent = hand.length;
-  if (turnText) {
-    turnText.textContent = currentTurn === "player" ? "🟢 À ton tour de jouer !" : "🔴 Tour de l'adversaire...";
-  }
-}
-
-let draggedCardIndex = null;
-
-function handleDragStart(e) {
-  if (currentTurn !== "player") {
-    e.preventDefault();
-    return;
-  }
-  draggedCardIndex = parseInt(e.target.dataset.cardIndex);
-  e.target.style.opacity = '0.5';
-  e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragEnd(e) {
-  e.target.style.opacity = '1';
-}
-
-function handleDragOver(e) {
-  if (e.preventDefault) {
-    e.preventDefault();
-  }
-  e.target.classList.add('bg-blue-500/30', 'border-blue-300');
-  e.dataTransfer.dropEffect = 'move';
-  return false;
-}
-
-function handleDragLeave(e) {
-  e.target.classList.remove('bg-blue-500/30', 'border-blue-300');
-}
-
-function handleDrop(e) {
-  if (e.stopPropagation) {
-    e.stopPropagation();
-  }
-  e.preventDefault();
-  
-  e.target.classList.remove('bg-blue-500/30', 'border-blue-300');
-  
-  if (draggedCardIndex === null || currentTurn !== "player") return;
-  if (playerField.length >= 5) {
-    showNotification("Le terrain est plein !", "pink");
-    return;
-  }
-  
-  const slotIndex = parseInt(e.target.dataset.slot);
-  if (playerField[slotIndex]) {
-    showNotification("Cette case est déjà occupée !", "pink");
-    return;
-  }
-  
-
-  showModeChoice(draggedCardIndex, slotIndex);
-  draggedCardIndex = null;
-  
-  return false;
-}
-
-function setupDragAndDrop() {
- 
+  if (turnText) turnText.textContent = currentTurn === "player" ? "🟢 À ton tour !" : "🔴 Tour adversaire...";
 }
 
 function showModeChoice(cardIndex, slotIndex) {
   const choiceBox = document.getElementById("mode-choice");
-  const btnDefense = document.getElementById("defense-btn");
-  const btnAttaque = document.getElementById("attaque-btn");
-  
   choiceBox.classList.remove("hidden");
-  
+
   const selectMode = (mode) => {
     const card = hand.splice(cardIndex, 1)[0];
     card.mode = mode;
     playerField[slotIndex] = card;
     choiceBox.classList.add("hidden");
     currentTurn = "ai";
-    render();
+    renderGame();
     setTimeout(aiPlay, 1500);
   };
-  
 
-  const newBtnDefense = btnDefense.cloneNode(true);
-  const newBtnAttaque = btnAttaque.cloneNode(true);
-  btnDefense.parentNode.replaceChild(newBtnDefense, btnDefense);
-  btnAttaque.parentNode.replaceChild(newBtnAttaque, btnAttaque);
-  
-  newBtnDefense.addEventListener("click", () => selectMode("defense"));
-  newBtnAttaque.addEventListener("click", () => selectMode("attaque"));
+  const btnD = document.getElementById("defense-btn");
+  const btnA = document.getElementById("attaque-btn");
+  const newBtnD = btnD.cloneNode(true);
+  const newBtnA = btnA.cloneNode(true);
+  btnD.parentNode.replaceChild(newBtnD, btnD);
+  btnA.parentNode.replaceChild(newBtnA, btnA);
+
+  newBtnD.onclick = () => selectMode("defense");
+  newBtnA.onclick = () => selectMode("attaque");
 }
 
 function aiPlay() {
-  if (aiDeck.length === 0) return;
-  if (aiField.length >= 5) {
+  if (aiDeck.length === 0 || aiField.length >= 5) {
     currentTurn = "player";
-    render();
+    renderGame();
     return;
   }
 
-  const randomIndex = Math.floor(Math.random() * aiDeck.length);
-  const card = aiDeck[randomIndex];
-
-  const randomMode = Math.random() > 0.5 ? "attaque" : "defense";
-  card.mode = randomMode;
+  const idx = Math.floor(Math.random() * aiDeck.length);
+  const card = aiDeck[idx];
+  card.mode = Math.random() > 0.5 ? "attaque" : "defense";
 
   aiField.push(card);
-  aiDeck.splice(randomIndex, 1);
-
+  aiDeck.splice(idx, 1);
   currentTurn = "player";
-  render();
+  renderGame();
 }
 
 function piocher() {
-  if (currentTurn !== "player") {
-    showNotification("Ce n'est pas votre tour !", "pink");
-    return;
-  }
-  if (hand.length >= 5) {
-    showNotification("Main pleine (max 5 cartes) !", "pink");
-    return;
-  }
-  if (!playDeck.length) {
-    showNotification("Plus de cartes dans le deck !", "pink");
-    return;
-  }
-  
+  if (currentTurn !== "player") { showNotification("Pas votre tour !", "pink"); return; }
+  if (hand.length >= 5) { showNotification("Main pleine !", "pink"); return; }
+  if (!playDeck.length) { showNotification("Plus de cartes !", "pink"); return; }
+
   const i = Math.floor(Math.random() * playDeck.length);
   const card = playDeck[i];
   hand.push({ ...card });
   card.quantity--;
-  if (card.quantity <= 0) {
-    playDeck = playDeck.filter(c => c.id !== card.id);
-  }
-  render();
+  
+  if (card.quantity <= 0) playDeck = playDeck.filter(c => c.id !== card.id);
+  
+  renderGame();
   showNotification(`${card.name} piochée !`, "green");
 }
+
+function endTurn() {
+  if (currentTurn !== "player") return;
+  currentTurn = "ai";
+  renderGame();
+  setTimeout(aiPlay, 1500);
+}
+
+// ===== INIT =====
+window.addEventListener("DOMContentLoaded", () => {
+  updateCartCount();
+
+  if (window.location.pathname.includes("play.html")) {
+    playDeck = JSON.parse(JSON.stringify(getMyDeck()));
+    aiDeck = JSON.parse(JSON.stringify(getMyDeck()));
+    renderGame();
+  } else if (window.location.pathname.includes("Favorites.html")) {
+    displayFavorites();
+  } else if (window.location.pathname.includes("my_deck.html")) {
+    displayMyDeck();
+  } else if (window.location.pathname.includes("carte.html")) {
+    displayCartItems();
+  } else if (window.location.pathname.includes("market.html")) {
+    paginate();
+  }
+});
