@@ -8,8 +8,30 @@ const cards = [
   { id: 6, name: "Snorlax", rarity: "Rare", description: "Un géant paresseux qui adore dormir.", price: "600 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/143.png" },
   { id: 7, name: "Eevee", rarity: "Common", description: "Un Pokémon mignon capable de multiples évolutions.", price: "300 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/133.png" },
   { id: 8, name: "Lucario", rarity: "Rare Ultra", description: "Un combattant agile qui maîtrise l'aura.", price: "1000 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/448.png" },
-  { id: 9, name: "Rayquaza", rarity: "Rare Rainbow", description: "Un dragon céleste gardien des cieux.", price: "2500 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/384.png" }
+  { id: 9, name: "Rayquaza", rarity: "Rare Rainbow", description: "Un dragon céleste gardien des cieux.", price: "2500 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/384.png" },
+  { id: 10, name: "Squirtle", rarity: "Common", description: "Une petite tortue maîtrisant l'eau.", price: "180 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/007.png" },
+  { id: 11, name: "Jigglypuff", rarity: "Common", description: "Un Pokémon chanteur connu pour endormir ses adversaires.", price: "160 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/039.png" },
+  { id: 12, name: "Machamp", rarity: "Rare", description: "Un maître du combat possédant quatre bras puissants.", price: "700 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/068.png" },
+  { id: 13, name: "Alakazam", rarity: "Rare Ultra", description: "Un expert en télékinésie doté d’un immense intellect.", price: "1300 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/065.png" },
+  { id: 14, name: "Gyarados", rarity: "Rare Holo", description: "Un Pokémon serpent de mer très redouté.", price: "1500 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/130.png" },
+  { id: 15, name: "Dragonite", rarity: "Rare Rainbow", description: "Un dragon bienveillant mais incroyablement puissant.", price: "2800 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/149.png" },
+  { id: 16, name: "Arcanine", rarity: "Rare", description: "Un Pokémon légendaire connu pour sa vitesse fulgurante.", price: "900 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/059.png" },
+  { id: 17, name: "Lapras", rarity: "Rare Holo", description: "Un Pokémon aquatique doux et protecteur.", price: "1100 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/131.png" },
+  { id: 18, name: "Umbreon", rarity: "Rare Ultra", description: "Une évolution sombre d’Eevee, mystérieuse et élégante.", price: "1400 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/197.png" },
+  { id: 19, name: "Espeon", rarity: "Rare Ultra", description: "Une évolution psychique d’Eevee, raffinée et intuitive.", price: "1350 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/196.png" },
+  { id: 20, name: "Tyranitar", rarity: "Rare Holo", description: "Un Pokémon colosse capable de détruire des montagnes.", price: "1700 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/248.png" },
+  { id: 21, name: "Metagross", rarity: "Rare Rainbow", description: "Un Pokémon acier-psy à la puissance calculée.", price: "2600 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/376.png" },
+  { id: 22, name: "Greninja", rarity: "Rare Ultra", description: "Un ninja rapide comme l'éclair, maître de l’eau.", price: "1200 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/658.png" },
+  { id: 23, name: "Zoroark", rarity: "Rare", description: "Un illusionniste redoutable capable de duper ses adversaires.", price: "900 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/571.png" },
+  { id: 24, name: "Sylveon", rarity: "Rare Ultra", description: "Une évolution féérique d’Eevee, douce mais puissante.", price: "1500 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/700.png" },
+  { id: 25, name: "Blastoise", rarity: "Rare Holo", description: "Un colosse aquatique armé de canons dorsaux.", price: "2000 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/009.png" },
+  { id: 26, name: "Venusaur", rarity: "Rare", description: "Une plante géante contrôlant son énergie solaire.", price: "1900 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/003.png" },
+  { id: 27, name: "Absol", rarity: "Rare", description: "Un Pokémon solitaire capable de prédire les catastrophes.", price: "800 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/359.png" },
+  { id: 28, name: "Darkrai", rarity: "Rare Rainbow", description: "Un être mystérieux capable d’invoquer des cauchemars.", price: "3200 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/491.png" },
+  { id: 29, name: "Dialga", rarity: "Rare Rainbow", description: "Le maître du temps, capable de le plier à sa volonté.", price: "3500 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/483.png" },
+  { id: 30, name: "Palkia", rarity: "Rare Rainbow", description: "Le maître de l’espace, contrôlant les dimensions.", price: "3400 $", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/484.png" }
 ];
+
 
 let currentPage = 1;
 let filteredCards = cards;
@@ -346,7 +368,7 @@ if (searchInput) {
   };
 }
 
-// =PAGINATION 
+// PAGINATION 
 const prevBtn = document.getElementById("prev-page");
 const nextBtn = document.getElementById("next-page");
 
@@ -394,10 +416,31 @@ if (mobileToggle) {
   };
 }
 
-// GAME 
+// PLAY
 let playDeck = [], hand = [], aiDeck = [], aiField = [], playerField = [];
 let currentTurn = "player";
 let draggedCardIndex = null;
+
+
+function startPlayerTurn() {
+  currentTurn = "player";
+  renderGame();
+}
+
+function startAITurn() {
+  currentTurn = "ai";
+  renderGame();
+  setTimeout(aiPlay, 1500);
+}
+
+function nextTurn() {
+  if (currentTurn === "player") {
+    startAITurn();
+  } else {
+    startPlayerTurn();
+  }
+}
+
 
 function renderGame() {
   const deckZone = document.getElementById("deck-zone");
@@ -489,6 +532,7 @@ function renderGame() {
   if (turnText) turnText.textContent = currentTurn === "player" ? "🟢 À ton tour !" : "🔴 Tour adversaire...";
 }
 
+
 function showModeChoice(cardIndex, slotIndex) {
   const choiceBox = document.getElementById("mode-choice");
   choiceBox.classList.remove("hidden");
@@ -498,9 +542,8 @@ function showModeChoice(cardIndex, slotIndex) {
     card.mode = mode;
     playerField[slotIndex] = card;
     choiceBox.classList.add("hidden");
-    currentTurn = "ai";
-    renderGame();
-    setTimeout(aiPlay, 1500);
+
+    nextTurn();
   };
 
   const btnD = document.getElementById("defense-btn");
@@ -514,10 +557,10 @@ function showModeChoice(cardIndex, slotIndex) {
   newBtnA.onclick = () => selectMode("attaque");
 }
 
+
 function aiPlay() {
   if (aiDeck.length === 0 || aiField.length >= 5) {
-    currentTurn = "player";
-    renderGame();
+    nextTurn();
     return;
   }
 
@@ -527,9 +570,10 @@ function aiPlay() {
 
   aiField.push(card);
   aiDeck.splice(idx, 1);
-  currentTurn = "player";
-  renderGame();
+
+  nextTurn();
 }
+
 
 function piocher() {
   if (currentTurn !== "player") { showNotification("Pas votre tour !", "pink"); return; }
@@ -540,21 +584,19 @@ function piocher() {
   const card = playDeck[i];
   hand.push({ ...card });
   card.quantity--;
-  
+
   if (card.quantity <= 0) playDeck = playDeck.filter(c => c.id !== card.id);
-  
+
   renderGame();
   showNotification(`${card.name} piochée !`, "green");
 }
 
+
 function endTurn() {
   if (currentTurn !== "player") return;
-  currentTurn = "ai";
-  renderGame();
-  setTimeout(aiPlay, 1500);
+  nextTurn();
 }
 
-// ===== INIT =====
 window.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
 
