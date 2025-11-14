@@ -409,12 +409,14 @@ if (window.location.pathname.includes("index.html") || window.location.pathname.
 
 // MOBILE MENU
 const mobileToggle = document.getElementById("mobile-toggle");
-if (mobileToggle) {
-  mobileToggle.onclick = () => {
-    const mobileMenu = document.getElementById("mobile-menu");
-    if (mobileMenu) mobileMenu.classList.toggle("hidden");
-  };
-}
+const mobileMenu = document.getElementById("mobile-menu");
+
+mobileToggle.addEventListener("click", () => {
+  mobileMenu.classList.toggle("show");
+});
+
+
+
 
 // PLAY
 let playDeck = [], hand = [], aiDeck = [], aiField = [], playerField = [];
